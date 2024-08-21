@@ -1,6 +1,6 @@
 from langchain_community.vectorstores import Qdrant
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
-from qdrant_client import qdrant_client
+from qdrant_client import QdrantClient
 
 #load the embedding model
 model_name = "BAAI/bge-large-en"
@@ -16,7 +16,7 @@ embeddings = HuggingFaceBgeEmbeddings(
 url = "http://localhost:6333"
 collection_name = "gpt_db"
 
-client = qdrant_client(url = url,
+client = QdrantClient(url = url,
                        prefer_grpc = False
                        )
 
@@ -32,4 +32,10 @@ db = Qdrant(
 print(db)
 print("##################")
 
-query = "Who should read this book?"
+query = "What is the first good approach for transforming your data for visualizing it with scatter plot?"
+
+docs = db.similarity_search_with_score(query=query, k=5)
+
+for i in docs:
+    doc, score = i
+    print({"score": score, "content": doc.page_content, "metadata": doc.metadata})
